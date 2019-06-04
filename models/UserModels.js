@@ -10,6 +10,9 @@ const userSchema = new schema({
     vehicleImageLink: { type: String, unique: false, required: true, trim: true },
     vehicleBrand: { type: String, unique: false, required: true, trim: true },
     vehicleId: { type: String, unique: false, required: true, trim: true },
+    isWorking: {type: Boolean, default:false},
+    currentLat:{type: String, default:"0"},
+    currentLng:{type: String, default:"0"}
 });
 
 module.exports = mongoose.model('User', userSchema);

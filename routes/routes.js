@@ -24,7 +24,7 @@ function requiresLogin(req, res, next) {
     }
 }
 
-router.get('/logout', requiresLogin, logout)
+router.post('/logout', logout)
 router.get('/pending_user', getAllPendingUser)
 router.get('/active_user', getAllActiveUser)
 router.put('/active_a_pending_user/:username', activeAPendingUser)
