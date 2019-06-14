@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
-const { register, login, logout, getAllPendingUser, getAllActiveUser, activeAPendingUser, banAUser } = require('../controllers/UserController')
+const { updateDriverLocation, register, login, logout, getAllPendingUser, getAllActiveUser, activeAPendingUser, banAUser } = require('../controllers/UserController')
 const { UserValidator } = require('../validators/validators')
+const {finishTheBookingRequest, booking, checkingForCustomer, cancelTheBookingRequest, acceptTheBookingRequest, checkCustomerBookingStatus } = require('../controllers/BookingControllers')
 
 router.post('/register', UserValidator, register)
 
@@ -29,5 +30,17 @@ router.get('/pending_user', getAllPendingUser)
 router.get('/active_user', getAllActiveUser)
 router.put('/active_a_pending_user/:username', activeAPendingUser)
 router.put('/ban_a_user/:username', banAUser)
+router.put('/update_driver_location', updateDriverLocation);
+
+router.get('/checking_for_customer/:username', checkingForCustomer)
+router.put('/checking_for_customer/:username/cancel', cancelTheBookingRequest)
+router.put('/checking_for_customer/:username/accept', acceptTheBookingRequest)
+router.put('/checking_for_customer/:username/finish', finishTheBookingRequest)
+
+
+
+router.post('/booking',booking)
+
+router.get('/check_my_booking_status/:phoneNumber/:id', checkCustomerBookingStatus)
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const User = require('../models/UserModels')
+const Booking = require('../models/BookingModels')
 const bcrypt = require('bcrypt');
 
 exports.register = (req, res, next) => {
@@ -20,6 +21,7 @@ exports.register = (req, res, next) => {
 }
 
 exports.login = function (req, res) {
+    console.log(req.body)
     User.findOne({ username: req.body.username }).exec(function (err, user) {
         if (err) {
             return res.json({ err })
@@ -46,26 +48,9 @@ exports.login = function (req, res) {
 }
 
 exports.logout = function (req, res) {
-
-    User.findOne({ username: req.body.username }).exec(function (err, user) {
-        if (err) {
-            return res.json({ err })
-        } else if (!user) {
-            return res.json({ err: 'Tài khoản hoặc mật khẩu không đúng' })
-        }
-        bcrypt.compare(req.body.password, user.password, (err, result) => {
-            if (result === true) {
-
-                //chuyen trang thai isWorking thanh false
-                User.findOneAndUpdate({ username: req.body.username }, { isWorking: false }, (err, doc, res) => {
-                })
-
-            } else {
-                return res.json({ err: 'Tài khoản hoặc mật khẩu không đúng' })
-            }
-        })
+    User.findOneAndUpdate({ username: req.body.username }, { isWorking: false }, (err, doc, res) => {
+        console.log('User ' + req.body.username + ' is loged out')
     })
-
 }
 
 exports.getAllPendingUser = (req, res) => {
@@ -95,3 +80,19 @@ exports.banAUser = (req, res) => {
         console.log(req.params.username)
     })
 }
+
+exports.updateDriverLocation = (req, res) => {
+    User.findOneAndUpdate({ username: req.body.username }, { currentLat: req.body.lat, currentLng: req.body.lng }, (err) => {
+        if (err) throw err;
+        console.log('cap nhat thanh cong toa do cua tai xe')
+    })
+}
+
+
+//nhan vao 1 toa do cua nguoi dung lay danh sach tai xe, su dung 1 ham tinh khoang cach tu tai xe den vi tri cua nguoi dung, 
+//tao ra 1 list tai xe thep thu tu khoang cach 
+let findDriver = (req, res) => {
+    let userLocation = req.body.userLocation
+
+}
+
