@@ -26,9 +26,10 @@ exports.booking = (req, res) => {
         if (driverDistant.length === 0) {
             res.json({ loi: 'khong tim thay tai xe' })
         }
-        let price = Math.round(req.body.distantBetween2point *10)/10 * 2000
+        let price = Math.round(req.body.distantBetween2point * 10) / 10 * 2000
         let data = {
-            id:req.body.phoneNumber+Date.now(),
+            id: req.body.phoneNumber + Date.now(),
+            date: Date.now(),
             bookerStartLat: req.body.startLat,
             bookerStartLng: req.body.startLng,
             bookerFinishLat: req.body.finishLat,
@@ -44,7 +45,7 @@ exports.booking = (req, res) => {
             if (booking !== null) {
                 const booking = new Booking(data)
                 booking.save((err, result) => {
-                    if(err) throw err;
+                    if (err) throw err;
                     console.log(result)
                 })
             }
@@ -113,11 +114,11 @@ exports.checkCustomerBookingStatus = (req, res) => {
     Booking.findOne({ bookerPhoneNumber: req.params.phoneNumber, status: 'driver_comming' }, (err, result) => {
         if (err) throw err
         if (result === null) {
-            Booking.findOne({id:req.params.id,status:'finish'},(err, result)=>{
-                if(result === null){
-                    res.json({loi:'cant find driver'});
+            Booking.findOne({ id: req.params.id, status: 'finish' }, (err, result) => {
+                if (result === null) {
+                    res.json({ loi: 'cant find driver' });
                 }
-                else res.json({finish:true});
+                else res.json({ finish: true });
             })
         }
         if (result) {
@@ -126,9 +127,149 @@ exports.checkCustomerBookingStatus = (req, res) => {
                 let { name, avatarLink, vehicleBrand, vehicleId } = user[0]
                 res.json({
                     name, avatarLink, vehicleBrand, vehicleId,
-                    distant,id
+                    distant, id
                 })
             })
         }
+    })
+}
+
+//summary
+exports.dailySummaryAll = (req, res) => {
+    let list = []
+    let data = {
+        finishBooking: 0,
+        cancelBooking: 0,
+        price: 0,
+    }
+    Booking.find((err, result) => {
+        result.forEach(r => {
+
+            if (Date.now() - r.date < 86400000) {
+                if (r.status == 'finish') {
+                    data.finishBooking = data.finishBooking + 1
+                    data.price = parseFloat(data.price) + parseFloat(r.price)
+                }
+                if (r.status == 'cancel') {
+                    data.cancelBooking = data.cancelBooking + 1
+                }
+            }
+        })
+        res.send(data)
+    })
+}
+
+exports.weeklySummaryAll = (req, res) => {
+    let list = []
+    let data = {
+        finishBooking: 0,
+        cancelBooking: 0,
+        price: 0,
+    }
+    Booking.find((err, result) => {
+        result.forEach(r => {
+
+            if (Date.now() - r.date < 86400000 * 7) {
+                if (r.status == 'finish') {
+                    data.finishBooking = data.finishBooking + 1
+                    data.price = parseFloat(data.price) + parseFloat(r.price)
+                }
+                if (r.status == 'cancel') {
+                    data.cancelBooking = data.cancelBooking + 1
+                }
+            }
+        })
+        res.send(data)
+    })
+}
+
+exports.monthlySummaryAll = (req, res) => {
+    let list = []
+    let data = {
+        finishBooking: 0,
+        cancelBooking: 0,
+        price: 0,
+    }
+    Booking.find((err, result) => {
+        result.forEach(r => {
+
+            if (Date.now() - r.date < 86400000 * 30) {
+                if (r.status == 'finish') {
+                    data.finishBooking = data.finishBooking + 1
+                    data.price = parseFloat(data.price) + parseFloat(r.price)
+                }
+                if (r.status == 'cancel') {
+                    data.cancelBooking = data.cancelBooking + 1
+                }
+            }
+        })
+        res.send(data)
+    })
+}
+
+exports.allSummaryAll = (req, res) => {
+    let list = []
+    let data = {
+        finishBooking: 0,
+        cancelBooking: 0,
+        price: 0,
+    }
+    Booking.find((err, result) => {
+        result.forEach(r => {
+
+            if (r.status == 'finish') {
+                data.finishBooking = data.finishBooking + 1
+                data.price = parseFloat(data.price) + parseFloat(r.price)
+            }
+            if (r.status == 'cancel') {
+                data.cancelBooking = data.cancelBooking + 1
+            }
+        })
+        res.send(data)
+    })
+}
+
+exports.allSummaryDriver = (req, res) => {
+    let data = {
+        finishBooking: 0,
+        cancelBooking: 0,
+        price: 0,
+    }
+    Booking.find({driverUsername:req.params.username},(err, result) => {
+        result.forEach(r => {
+
+            if (r.status == 'finish') {
+                data.finishBooking = data.finishBooking + 1
+                data.price = parseFloat(data.price) + parseFloat(r.price)
+            }
+            if (r.status == 'cancel') {
+                data.cancelBooking = data.cancelBooking + 1
+            }
+        })
+        res.send(data)
+    })
+}
+
+exports.weeklySummaryDriver = (req, res) => {
+    let list = []
+    let data = {
+        finishBooking: 0,
+        cancelBooking: 0,
+        price: 0,
+    }
+    Booking.find({driverUsername:req.params.username},(err, result) => {
+        result.forEach(r => {
+
+            if (Date.now() - r.date < 86400000 * 7) {
+                if (r.status == 'finish') {
+                    data.finishBooking = data.finishBooking + 1
+                    data.price = parseFloat(data.price) + parseFloat(r.price)
+                }
+                if (r.status == 'cancel') {
+                    data.cancelBooking = data.cancelBooking + 1
+                }
+            }
+        })
+        res.send(data)
     })
 }

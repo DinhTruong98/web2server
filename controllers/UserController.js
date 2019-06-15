@@ -81,6 +81,14 @@ exports.banAUser = (req, res) => {
     })
 }
 
+exports.delAUser = (req, res) => {
+    User.findOneAndRemove({ username: req.params.username }, (err) => {
+        if (err) throw err;
+        console.log(req.params.username)
+    })
+}
+
+
 exports.updateDriverLocation = (req, res) => {
     User.findOneAndUpdate({ username: req.body.username }, { currentLat: req.body.lat, currentLng: req.body.lng }, (err) => {
         if (err) throw err;

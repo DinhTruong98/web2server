@@ -12,7 +12,7 @@ const bookingSchema = new schema({
     driverUsername: { type: String },
     price:{type: String, default:'0'},
     distantBetween2point:{type:String},
-    date:{type:Date, default: Date.now()},
+    date:{type:String},
     status:{type: String, enum:['booking','driver_comming','driving_customer','finished','canceled'], required: true},
     distant:{type:String}
 });
